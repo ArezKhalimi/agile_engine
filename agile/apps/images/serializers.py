@@ -17,5 +17,5 @@ class ImageSerializer(serializers.HyperlinkedModelSerializer):
         model = Image
         fields = [
             'id', 'title', 'picture', 'camera', 'author', 'tags',
-            'last_activity'
+            'last_interaption'
         ]

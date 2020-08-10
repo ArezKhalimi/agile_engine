@@ -4,4 +4,4 @@ agile/media/*
 .env
 .DS_Store
 .python-version
-requirements.txt
+*celerybeat*

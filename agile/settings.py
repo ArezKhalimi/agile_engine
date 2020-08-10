@@ -26,7 +26,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'constance',
+    'django_celery_beat',
+    'rest_framework',
     'agile.apps.images',
 ]
 
@@ -97,8 +98,10 @@ MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
 
 MEDIA_URL = env.str('DJANGO_MEDIA_URL', default='/pic/')
 
-CONSTANCE_BACKEND = 'constance.backends.memory.MemoryBackend'
+IMG_URL = env.str('IMG_URL')
+AUTH_URL = env.str('AUTH_URL')
 
-CONSTANCE_CONFIG = {
-    'CACHE_TTL': (1.0, 'TTL of cached images (hours)', float),
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',  # noqa
+    'PAGE_SIZE': 10
 }

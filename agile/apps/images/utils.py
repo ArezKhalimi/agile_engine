@@ -1,24 +1,14 @@
 import requests
 
 from django.core.files.base import ContentFile
+from django.conf import settings
 
 from agile.apps.images.models import Image, HashTag
 
 
-'''
-{'id': 'd3f812bc62be33098bb6',
- 'author': 'Weekly Attack',
- 'camera': 'Nikon D800E',
- 'tags': '#photo ',
- 'cropped_picture': 'http://interview.agileengine.com/pictures/cropped/kimorg-20000111-125136.jpg',
- 'full_picture': 'http://interview.agileengine.com/pictures/full_size/kimorg-20000111-125136.jpg'}
-}
-'''
-
-
 class ImageStorageHandler:
-    url = 'http://interview.agileengine.com/images/'
-    auth_url = 'http://interview.agileengine.com/auth'
+    url = settings.IMG_URL
+    auth_url = settings.AUTH_URL
 
     def get_auth_token(self):
         resp = requests.post(
@@ -36,25 +26,25 @@ class ImageStorageHandler:
         page_count = rsp.json()['pageCount']
 
         for page in range(1, page_count):
-            pictures = requests.get(self.url, headers=headers, params={"page": page}).json()["pictures"]
+            pictures = requests.get(self.url, headers=headers, params={"page": page}).json()["pictures"]  # noqa
             for picture in pictures:
                 pcid = picture["id"]
-                if Image.objects.filter(pcid=pcid).exists():
-                    continue
+                # if Image.objects.filter(pcid=pcid).exists():
+                #     continue
                 response = requests.get(self.url+pcid, headers=headers)
                 if response.status_code != requests.codes.ok:
                     continue
 
                 image_data = response.json()
-                print(image_data.keys())
 
-                img = Image(
+                img, _ = Image.objects.get_or_create(
                     pcid=pcid,
-                    author=image_data.get('author', None),
-                    camera=image_data.get('camera', None),
+                    defaults={
+                        'author': image_data.get('author', None),
+                        'camera': image_data.get('camera', None)
+                    },
                 )
                 tags = self.get_tags(image_data['tags'])
-
                 file_name, file = self.get_picture(image_data['full_picture'])
 
                 img.picture.save(file_name, file)
