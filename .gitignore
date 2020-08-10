@@ -1,0 +1,7 @@
+agile/media/*
+*.pyc
+.vscode
+.env
+.DS_Store
+.python-version
+requirements.txt
